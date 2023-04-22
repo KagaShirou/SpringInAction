@@ -15,8 +15,8 @@ Spring应用上下文的种类
 ![img.png](png/img.png)
 
 Spring中Bean的生命周期
-![img_1.png](png/img_1.png)
-![img_2.png](png/img_2.png)
+![img_1.png](img_1.png)
+![img_2.png](img_2.png)
 
 配置Spring中的Bean  
 1. 使用xml文档
@@ -47,46 +47,5 @@ XML配置
 c命名空间，p命名空间。
 
 自动装配和显式装配的混合使用  
-@Import(Config.class)拼接不同的JavaConfig  
-XML文件中使用import标签装配
-
-按照生产环境配置Bean  
-使用@Profile(name)注解，可放在类名之上，也可放在方法上，当对应的profile激活时，装配对应的Bean，  
-主要用于线上环境prod(product)、开发环境dev(development)、测试环境test、提测环境qa、单元测试unitest等。  
-在application.properties中使用`spring.profiles.active=dev`进行配置。 
-```java
-@Configuration
-public class AppConfig {
-
-    @Conditional(OsxCondition.class)
-    @Bean
-    public Student student(){
-        return new Student();
-    }
-
-    @Conditional(LinuxCondition.class)
-    @Bean
-    public Teacher teacher(){
-        return new Teacher();
-    }
-
-    @Conditional(WindowsCondition.class)
-    @Bean
-    public Parent parent(){
-        return new Parent();
-    }
-
-    @Profile("dev")
-    @Bean
-    public Monitors monitors() {
-        return new Monitors();
-    }
-}
-```
-
-
-有条件的创建Bean  
-使用@Conditional(Condition.class)，Condition的实现类用于判断当前环境是否可以创建Bean。
-
-
+@Import(Config.class)拼接不同的JavaConfig
 
