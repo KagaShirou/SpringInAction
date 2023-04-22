@@ -4,12 +4,13 @@
 
 简化java的开发，提高对象的可用性，灵活性。   
 
-DI(Dependency Injection)，依赖注入，减少代码的耦合性，举勇者斗恶龙例子。勇者在类中创建了恶龙对象，并通过一个函数进行交互，但是冒险
+DI(Dependency Injection)，依赖注入，将一个Bean注入到另一个Bean的属性或构造器参数中，将两者进行关联。减少代码的耦合性，举勇者斗恶龙例子。勇者在类中创建了恶龙对象，并通过一个函数进行交互，但是冒险
 任务并不是单一的，我们可以救公主，收集材料，制作武器，写死的代码救缺少了灵活性，通过构造器进行注入就能实现任务的传入。
 
 AOP(Aspect Oriented Programming)，对于一些系统级别的功能，安全检查（登陆账号的验证），日志记录，事务管理，它们常常在模块各处被调用，
 不便于管理，Aop通过声明的方式，将这些功能，借助DI进行使用管理。提高代码的内聚性。举吟游诗人和勇者的例子。没有AOP之前，我们需要在勇者中
-声明吟游诗人，然后才能调用对应的方法，有了切面之后，我们在代码中没有显式的使用代码，而是通过xml的方式确定执行哪个代码，以及在哪里执行。
+声明吟游诗人，然后才能调用对应的方法，有了切面之后，我们在代码中没有显式的使用代码，而是通过xml的方式确定执行哪个代码，以及在哪里执行。  
+![img.png](img.png)
 
 Spring应用上下文的种类
 ![img.png](png/img.png)
@@ -84,9 +85,41 @@ public class AppConfig {
 }
 ```
 
-
 有条件的创建Bean  
-使用@Conditional(Condition.class)，Condition的实现类用于判断当前环境是否可以创建Bean。
+使用@Conditional(Condition.class)，Condition的实现类用于判断当前环境是否可以创建Bean。  
 
+处理有歧义的装配
+使用@Autowired装配接口时，如果该接口有多个实现类，就会出现歧义问题。  
+使用@Primary设置优先装配的Bean；  
+使用@Qualifier(name)，表示限定符，可理解为类的某些特性，不可以多个进行叠加。  
+搭配@Autowired装配对应类名的实现类，最好在@Component也添加@Qualifier(name)，保持name的一致。  
+可使用自定义的限定符注解@Creamy，可重复叠加。
 
+Bean的作用域  
+单例是默认的装配模式，当类的状态易变时，单例模式不再适合,@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)。  
+![img_3.png](png/img_3.png)
+场景举例
+会话作用域的购物车的好处，单例会让所有用户的商品加在一个购物车中，原型无法保留用户在不同位置的请求。  
 
+运行时注入外部文件值  
+```java
+@SpringBootTest
+@PropertySource("application-dev.properties")
+public class EnvironmentTest {
+    @Autowired
+    Environment env;
+
+    @Test
+    public void EnvironmentConfig() {
+        System.out.println("a:" + env.getProperty("env.a"));
+    }
+}
+```  
+
+AOP术语  
+切面完成的工作被称为通知，确定了切面完成的工作，何时（方法的前后）去完成。  
+通知类型
+![img_1.png](img_1.png)
+
+连接点（Joint Point）和切入点（Poincut）  
+潜在的可插入切面的位置。
