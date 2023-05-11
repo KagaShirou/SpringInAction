@@ -104,6 +104,30 @@ Bean的作用域
 场景举例
 会话作用域的购物车的好处，单例会让所有用户的商品加在一个购物车中，原型无法保留用户在不同位置的请求。  
 
+懒加载  
+@Lazy，懒加载针对单例模式而言，容器创建之后，不会立刻注册Bean，只有当Bean第一次被获取时才会进行注册。
+```java
+@Configuration
+public class LazyConfig {
+    @Bean
+    @Lazy
+    public Student getStudent() {
+        System.out.println("register Bean ... ");
+        return new Student();
+    }
+}
+
+@SpringBootApplication
+public class LazyConfigAppliction {
+    public static void main(String[] args) {
+        SpringApplication.run(LazyConfigAppliction.class, args);
+        ApplicationContext ioc = new AnnotationConfigApplicationContext(LazyConfig.class);
+        System.out.println("creating ioc ...");
+        Student student = ioc.getBean(Student.class);
+    }
+}
+```
+
 运行时注入外部文件值  
 ```java
 @SpringBootTest
@@ -131,5 +155,10 @@ AOP术语
 引入用于修改当前类的属性和方法。  
 
 Spring中仅支持方法级别的连接点。使用AspectJ的切点表达式来定义切点
-![img_1.png](img_1.png)
+![img_1.png](img_1.png)  
+
+## 一些坑  
+
+SpringBoot项目打包：
+IDEA中mvn package，存放在target目录下。
 
