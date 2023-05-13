@@ -6,15 +6,14 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
+        <module name="conditional" />
         <module name="springconfig" />
       </profile>
     </annotationProcessing>
-    <bytecodeTargetLevel>
-      <module name="conditional" target="17" />
-    </bytecodeTargetLevel>
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
+      <module name="conditional" options="-parameters" />
       <module name="springconfig" options="-parameters" />
     </option>
   </component>

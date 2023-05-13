@@ -8,6 +8,7 @@
     <option name="originalFiles">
       <list>
         <option value="$PROJECT_DIR$/springconfig/pom.xml" />
+        <option value="$PROJECT_DIR$/conditional/pom.xml" />
       </list>
     </option>
   </component>

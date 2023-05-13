@@ -157,6 +157,10 @@ AOP术语
 Spring中仅支持方法级别的连接点。使用AspectJ的切点表达式来定义切点
 ![img_1.png](img_1.png)  
 
+## Spring使用记录  
+@ResponseBody：用在controller中，将方法的返回值作为web响应的主体，不解释为视图，通过http消息转换器请求http中的标头内容类型将返回值转换
+为http响应主体。
+
 ## 一些坑  
 
 SpringBoot项目打包：
