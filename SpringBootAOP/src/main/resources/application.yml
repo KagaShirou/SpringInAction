@@ -1,0 +1,19 @@
+server:
+#  context-path: /web
+#  port: 8888
+
+spring:
+  datasource:
+    type: com.alibaba.druid.pool.DruidDataSource
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/springboot?useUnicode=true&characterEncoding=UTF-8&useSSL=false
+    username: root
+    password: 342601
+
+
+mybatis:
+  #指定Mybatis的Mapper文件
+  mapper-locations: mappers/*xml
+  #指定Mybatis的实体目录
+  type-aliases-package: com.kaga.springbootaop.mybatis.entity
+

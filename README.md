@@ -161,8 +161,104 @@ Spring中仅支持方法级别的连接点。使用AspectJ的切点表达式来�
 @ResponseBody：用在controller中，将方法的返回值作为web响应的主体，不解释为视图，通过http消息转换器请求http中的标头内容类型将返回值转换
 为http响应主体。
 
+### 如何使用自定义注解（范例 操作日志注解）
+1. 
+```java
+@Target(ElementType.METHOD)
+//确定注解的类型，加在方法之上还是啥（这么细，傻逼听不懂，只会ctrl-c）
+@Retention(RetentionPolicy.RUNTIME)
+//保留的注解，标识注解停留的时间。
+@Documented
+public @interface LogOperation {
+	String value() default "";
+}
+```
+2. 
+```java
+@Aspect
+@Component
+public class LogOperationAspect {
+
+    @Autowired
+    private SysLogOperationService sysLogOperationService;
+    
+    //切点，获取注解的位置
+    //@execution()获取aspectJ切点表达式的位置
+    @Pointcut("@annotation(io.renren.common.annotation.LogOperation)")
+    public void logPointCut() {
+
+    }
+
+    //@Before是在方法执行前，不返回结果
+    //这里是环绕注解，要返回结果
+    @Around("logPointCut()")
+    public Object around(ProceedingJoinPoint point) throws Throwable {
+        long beginTime = System.currentTimeMillis();
+        try {
+            //执行方法
+            Object result = point.proceed();
+            //执行时长(毫秒)
+            long time = System.currentTimeMillis() - beginTime;
+            //持久化，保存日志
+            saveLog(point, time, OperationStatusEnum.SUCCESS.value());
+
+            return result;
+        }catch(Exception e) {
+            //执行时长(毫秒)
+            long time = System.currentTimeMillis() - beginTime;
+            //保存日志
+            saveLog(point, time, OperationStatusEnum.FAIL.value());
+
+            throw e;
+        }
+    }
+
+    private void saveLog(ProceedingJoinPoint joinPoint, long time, Integer status) throws Exception {
+        MethodSignature signature = (MethodSignature) joinPoint.getSignature();
+        Method method = joinPoint.getTarget().getClass().getDeclaredMethod(signature.getName(), signature.getParameterTypes());
+        LogOperation annotation = method.getAnnotation(LogOperation.class);
+
+        SysLogOperationEntity log = new SysLogOperationEntity();
+        if(annotation != null){
+            //注解上的描述
+            log.setOperation(annotation.value());
+        }
+
+        //登录用户信息
+        UserDetail user = SecurityUser.getUser();
+        if(user != null){
+            log.setCreatorName(user.getUsername());
+        }
+
+        log.setStatus(status);
+        log.setRequestTime((int)time);
+
+        //请求相关信息
+        HttpServletRequest request = HttpContextUtils.getHttpServletRequest();
+        log.setIp(IpUtils.getIpAddr(request));
+        log.setUserAgent(request.getHeader(HttpHeaders.USER_AGENT));
+        log.setRequestUri(request.getRequestURI());
+        log.setRequestMethod(request.getMethod());
+
+        //请求参数
+        Object[] args = joinPoint.getArgs();
+        try{
+            String params = JsonUtils.toJsonString(args[0]);
+            log.setRequestParams(params);
+        }catch (Exception e){
+
+        }
+
+        //保存到DB
+        sysLogOperationService.save(log);
+    }
+}
+```
+
 ## 一些坑  
 
 SpringBoot项目打包：
 IDEA中mvn package，存放在target目录下。
+
+
 
